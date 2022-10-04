@@ -1,0 +1,2 @@
+ - Protfolio website for Kunal Pandya
+ - Template borrowed from Ryan Fitzgerald, see styles.scss for more details
