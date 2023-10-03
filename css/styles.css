@@ -77,6 +77,8 @@ header.sticky{position:fixed;z-index:999}
 .education-block h4{color:#74808a;clear:both;font-weight:500;margin:0 0 15px 0}
 .education-block p,.education-block ul{margin:0;color:#74808a;font-size:0.9em}
 .education-block ul{padding:0 0 0 15px}
+#project{padding:20px 15px 100px 15px;border-bottom:1px solid #dcd9d9;text-align:center}
+#project h2{color:#43335f;margin-bottom:50px}
 #skills{padding:50px 15px;text-align:center}
 #skills h2{color:#43335f;margin-bottom:50px}
 #skills ul{display:block;margin:0 auto;padding:0;max-width:800px}
@@ -100,3 +102,148 @@ header.sticky{position:fixed;z-index:999}
 .project-info{position:relative;margin:0;padding:30px 15px;top:auto;transform:none}
 footer{text-align:center}.social{text-align:center}}
 @media only screen and (max-width: 480px){#lead-content h1{font-size:1.5em}#lead-content h2{font-size:1em}#lead-content a{font-size:0.9em;padding:5px 10px}}
+.contain {
+    position: relative;
+    height: auto;
+    width: 100%;
+    top: 10px;
+    padding-left: 10%;
+    display: flex;
+  }
+  .card {
+    display: flex;
+    height: 400px;
+    width: 250px;
+    background-color: #17141d;
+    border-radius: 10px;
+    box-shadow: -1rem 0 3rem #000;
+  /*   margin-left: -50px; */
+    transition: 0.4s ease-out;
+    position: relative;
+    left: 0px;
+  }
+  
+  .card:not(:first-child) {
+      margin-left: -30px;
+  }
+  
+  .card:hover {
+    transform: translateY(-20px);
+    transition: 0.4s ease-out;
+  }
+  
+  .card:hover ~ .card {
+    position: relative;
+    left: 100px;
+    transition: 0.4s ease-out;
+  }
+  
+  .title {
+    color: white;
+    font-weight: 300;
+    position: absolute;
+    padding-left: 10%;
+    padding-right: 10%;
+    top: 15px;
+  }
+  
+  .bar {
+    position: absolute;
+    top: 100px;
+    left: 5%;
+    height: 5px;
+    width: 90%;
+  }
+  
+  .emptybar {
+    background-color: #2e3033;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .filledbar {
+    position: absolute;
+    top: 0px;
+    z-index: 3;
+    width: 0px;
+    height: 100%;
+    background: rgb(0,154,217);
+    background: linear-gradient(90deg, rgba(0,154,217,1) 0%, #b962ff 65%, #b962ff 100%);
+    transition: 0.6s ease-out;
+  }
+  
+  .card:hover .filledbar {
+    width: 100%;
+    transition: 0.4s ease-out;
+  }
+  
+  .circle {
+    position: absolute;
+    top: 210px;
+    padding-left: 5%;
+    padding-right: 5%;
+    width: 100%;
+  }
+
+  .pic{
+    position: absolute;
+  }
+
+  .circle p{
+    color: white;
+    font-weight: 300;
+    font-size: 15px;
+  }
+  
+  .stroke {
+    stroke: white;
+    stroke-dasharray: 360;
+    stroke-dashoffset: 360;
+    transition: 0.6s ease-out;
+  }
+  
+  svg {
+    fill: #17141d;
+    stroke-width: 2px;
+  }
+  
+  .card:hover .stroke {
+    stroke-dashoffset: 100;
+    transition: 0.6s ease-out;
+  }
+
+  @media (max-width: 768px) {
+    .pic {
+      display: none; /* Hide the .bar and .pic on mobile devices */
+    }
+    .card:not(:first-child) {
+      margin-left: 0px;
+    }
+
+    .card:hover ~ .card {
+      position: relative;
+      left: 0px;
+      transition: 0.4s ease-out;
+    }
+
+    .bar{
+      top: 90px;
+    }
+
+    .circle p{
+      font-size: 10px;
+    }
+
+    .circle {
+      top: 100px;
+    }
+
+    .contain{
+      display: block;
+    }
+
+    .card {
+      height: 200px;
+      max-height: 400px; /* Adjust the maximum height as needed */
+    }
+  }
