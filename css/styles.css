@@ -243,14 +243,12 @@ footer{text-align:center}.social{text-align:center}}
     }
 
     .contain{
-      display: block; 
-      text-align: center;
-      align-items: center;
+      flex-wrap: wrap;
     }
 
     .card {
       height: 200px;
-      margin: 10px;
+      margin-bottom: 10px;
 
     }
   }
