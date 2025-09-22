@@ -17,6 +17,8 @@
 </head>
 
 <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
     <div id="mobile-menu-open" class="shadow-large">
         <i class="fa fa-bars" aria-hidden="true"></i>
     </div>
@@ -281,5 +283,170 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="js/scripts.min.js"></script>
 </body>
+<script>
+    (() => {
+        const CANVAS = document.getElementById('bg-canvas');
+        if (!CANVAS) return;
+        const CTX = CANVAS.getContext('2d');
+        const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // cap for perf
+
+        // THEME
+        const COLOR_DOT = 'rgba(255,255,255,0.6)';
+        const COLOR_LINE = 'rgba(173,140,255,0.25)'; // lilac line
+        const BG_GRADIENT = ['#2b1b89', '#1f125f'];  // matches your purple hero
+
+        // SETTINGS
+        let PARTICLES = 100;            // will scale with screen size below
+        const MAX_SPEED = 0.3;          // px per frame (@1x)
+        const DOT_RADIUS = 2;
+        const LINK_DIST = 130;          // px distance to draw lines
+        const MOUSE_PULL = 0.06;        // attraction (+) or repulsion (-) coefficient
+        const USE_ATTRACTION = false;    // set true to attract to the cursor
+
+        // Respect reduced motion
+        const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (REDUCED) {
+            // Don’t animate, keep static gradient background
+            return;
+        }
+
+        // State
+        const mouse = { x: null, y: null, active: false };
+        let W = 0, H = 0, particles = [], rafId = 0;
+
+        function resize() {
+            W = CANVAS.clientWidth;
+            H = CANVAS.clientHeight;
+            CANVAS.width = Math.floor(W * DPR);
+            CANVAS.height = Math.floor(H * DPR);
+            CTX.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+            // Adjust particle count based on area
+            const area = W * H;
+            PARTICLES = Math.min(500, Math.max(60, Math.floor(area / 12000)));
+
+            // Rebuild particles if count changed a lot or none exist
+            if (!particles.length || Math.abs(particles.length - PARTICLES) > 10) {
+                particles = [];
+                for (let i = 0; i < PARTICLES; i++) {
+                    particles.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        vx: (Math.random() * 2 - 1) * MAX_SPEED,
+                        vy: (Math.random() * 2 - 1) * MAX_SPEED
+                    });
+                }
+            }
+        }
+
+        function drawBackground() {
+            // Nice vertical gradient to match your hero
+            const g = CTX.createLinearGradient(0, 0, 0, H);
+            g.addColorStop(0, BG_GRADIENT[0]);
+            g.addColorStop(1, BG_GRADIENT[1]);
+            CTX.fillStyle = g;
+            CTX.fillRect(0, 0, W, H);
+        }
+
+        function update() {
+            for (const p of particles) {
+                // Cursor interaction
+                if (mouse.active && mouse.x != null) {
+                    const dx = mouse.x - p.x;
+                    const dy = mouse.y - p.y;
+                    const d2 = dx * dx + dy * dy;
+                    const range = 160; // influence radius
+                    if (d2 < range * range) {
+                        const d = Math.sqrt(d2) || 1;
+                        const ux = dx / d, uy = dy / d;
+                        const k = (USE_ATTRACTION ? 1 : -1) * MOUSE_PULL * (1 - d / range);
+                        p.vx += ux * k;
+                        p.vy += uy * k;
+                    }
+                }
+
+                // Natural motion
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Gentle wrap
+                if (p.x < -20) p.x = W + 20;
+                if (p.y < -20) p.y = H + 20;
+                if (p.x > W + 20) p.x = -20;
+                if (p.y > H + 20) p.y = -20;
+
+                // Slight velocity damping for stability
+                p.vx *= 0.995;
+                p.vy *= 0.995;
+            }
+        }
+
+        function draw() {
+            drawBackground();
+
+            // Draw links
+            CTX.lineWidth = 1;
+            CTX.strokeStyle = COLOR_LINE;
+            for (let i = 0; i < particles.length; i++) {
+                const p1 = particles[i];
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x, dy = p1.y - p2.y;
+                    const d2 = dx * dx + dy * dy;
+                    if (d2 < LINK_DIST * LINK_DIST) {
+                        const alpha = 1 - Math.sqrt(d2) / LINK_DIST;
+                        CTX.globalAlpha = Math.max(0.08, alpha * 0.6);
+                        CTX.beginPath();
+                        CTX.moveTo(p1.x, p1.y);
+                        CTX.lineTo(p2.x, p2.y);
+                        CTX.stroke();
+                    }
+                }
+            }
+            CTX.globalAlpha = 1;
+
+            // Draw dots
+            CTX.fillStyle = COLOR_DOT;
+            for (const p of particles) {
+                CTX.beginPath();
+                CTX.arc(p.x, p.y, DOT_RADIUS, 0, Math.PI * 2);
+                CTX.fill();
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            rafId = requestAnimationFrame(loop);
+        }
+
+        // Events
+        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            mouse.active = true;
+        }, { passive: true });
+
+        window.addEventListener('mouseleave', () => { mouse.active = false; }, { passive: true });
+        // Touch fallback (gentle auto drift instead of heavy tracking)
+        window.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true;
+        }, { passive: true });
+        window.addEventListener('touchend', () => { mouse.active = false; }, { passive: true });
+
+        // Init
+        resize();
+        loop();
+
+        // If the tab is hidden, pause to save battery
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) cancelAnimationFrame(rafId);
+            else loop();
+        });
+    })();
+</script>
+
 
 </html>
