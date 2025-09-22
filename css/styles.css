@@ -3,15 +3,26 @@
     that don't come from third party libraries. This file gets compiled using
     Gulp and send to the /css folder which is then loaded on the page.
 */
+/* stop parallax; let the canvas move with the document */
+/* make sure nothing blocks the canvas */
+html,
+body {
+  background: transparent;
+}
+
 #bg-canvas {
   position: fixed;
-  inset: 0;
+  /* pinned to viewport, sits behind content */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   z-index: -1;
-  background: linear-gradient(180deg, #2b1b89 0%, #1f125f 100%);
-  /* your purple base */
+  pointer-events: none;
+  /* never intercept clicks */
 }
+
+
 
 body {
   font-family: 'Roboto', sans-serif;
@@ -24,10 +35,9 @@ body.active {
 }
 
 .no-js #experience-timeline>div {
-  background: #fff;
+  background: transparent;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #dcd9d9
 }
 
 .no-js #experience-timeline>div h3 {
@@ -106,18 +116,17 @@ header li {
 header a {
   display: block;
   color: #3498db;
-  padding: 10px
+  padding: 10px;
 }
 
 header a:hover {
   color: #3498db;
   text-decoration: none;
-  background: lightgray;
   border-radius: 4px;
 }
 
 header a:focus {
-  color: #d7a7ff;
+  color: #9d4edd;
   text-decoration: none
 }
 
@@ -288,7 +297,7 @@ footer {
 }
 
 .background-alt {
-  background: rgb(229, 229, 229)
+  background: #101423;
 }
 
 #lead {
@@ -383,7 +392,7 @@ footer {
 }
 
 #about h2 {
-  color: #43335f
+  color: #a0cfee;
 }
 
 #about p {
@@ -394,21 +403,33 @@ footer {
 #experience {
   padding: 50px 15px;
   text-align: center;
-  border-bottom: 1px solid #dcd9d9
+  background: linear-gradient(180deg, #101423 0%, #0c0f1f 100%);
 }
 
 #experience h2 {
-  color: #43335f
+  color: #a0cfee;
+  position: relative;
+  display: inline-block;
+}
+
+#experience h2:after {
+  content: '';
+  display: block;
+  margin: 8px auto 0;
+  height: 2px;
+  width: 60px;
+  background: linear-gradient(90deg, #3a86ff, #9d4edd);
+  border-radius: 2px;
 }
 
 #experience li {
-  color: #74808a
+  color: #b0b6c2;
 }
 
 #experience-timeline {
   margin: 30px auto 0 auto;
   position: relative;
-  max-width: 1000px
+  max-width: 1000px;
 }
 
 #experience-timeline:before {
@@ -420,8 +441,8 @@ footer {
   right: auto;
   height: 100%;
   width: 3px;
-  background: #3498db;
-  z-index: 0
+  background: linear-gradient(to bottom, #3a86ff, #9d4edd);
+  z-index: 0;
 }
 
 #experience-timeline:after {
@@ -429,47 +450,55 @@ footer {
   content: '';
   width: 3px;
   height: 40px;
-  background: #3498db;
-  background: linear-gradient(to bottom, #3498db, rgba(52, 152, 219, 0));
+  background: linear-gradient(to bottom, #9d4edd, rgba(61, 133, 255, 0));
   top: 100%;
-  left: 303px
+  left: 303px;
 }
 
 .vtimeline-content {
   margin-left: 350px;
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  padding: 15px;
-  border-radius: 3px;
-  text-align: left
+  background: #151822;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: left;
+  color: #dbe4ff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.vtimeline-content:hover {
+  transform: translateY(-6px);
+  border-color: #3a86ff;
+  box-shadow: 0 12px 24px rgba(58, 134, 255, 0.25);
 }
 
 .vtimeline-content h3 {
   font-size: 1.5em;
-  font-weight: 300;
-  color: #374054;
+  font-weight: 400;
+  color: #ffffff;
   display: inline-block;
-  margin: 0
+  margin: 0;
 }
 
 .vtimeline-content h4 {
   font-size: 1.2em;
   font-weight: 300;
-  color: #7e8890;
-  margin: 0 0 15px 0
+  color: #9d9dff;
+  margin: 0 0 15px 0;
 }
 
 .vtimeline-content p {
-  color: #74808a;
-  font-size: 0.9em;
-  margin: 0
+  color: #b0b6c2;
+  font-size: 0.95em;
+  margin: 0;
 }
 
 .vtimeline-point {
   position: relative;
   display: block;
   vertical-align: top;
-  margin-bottom: 30px
+  margin-bottom: 30px;
 }
 
 .vtimeline-icon {
@@ -477,17 +506,18 @@ footer {
   color: #fff;
   width: 50px;
   height: 50px;
-  background: #3498db;
+  background: radial-gradient(circle, #3a86ff 0%, #4361ee 80%);
   border-radius: 50%;
   float: left;
   z-index: 99;
-  margin-left: 280px
+  margin-left: 280px;
+  box-shadow: 0 0 12px rgba(61, 133, 255, 0.6);
 }
 
 .vtimeline-icon i {
   display: block;
   font-size: 2em;
-  margin-top: 10px
+  margin-top: 10px;
 }
 
 .vtimeline-date {
@@ -497,52 +527,77 @@ footer {
   left: 0;
   top: 10px;
   font-weight: 300;
-  color: #374054
+  color: #a0cfee;
 }
 
 #education {
   padding: 50px 15px 20px 15px;
-  border-bottom: 1px solid #dcd9d9;
   text-align: center
 }
 
 #education h2 {
-  color: #43335f;
-  margin-bottom: 50px
+  color: #a0cfee;
+  margin-bottom: 40px;
+  position: relative;
+  display: inline-block;
+}
+
+#education h2::after {
+  content: '';
+  display: block;
+  margin: 8px auto 0;
+  height: 2px;
+  width: 60px;
+  background: linear-gradient(90deg, #3a86ff, #9d4edd);
+  border-radius: 2px;
 }
 
 .education-block {
   max-width: 700px;
   margin: 0 auto 30px auto;
-  padding: 15px;
-  border: 1px solid #dcd9d9;
-  text-align: left
+  padding: 20px;
+  text-align: left;
+
+  background: #151822;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  color: #dbe4ff;
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+
+.education-block:hover {
+  transform: translateY(-6px);
+  border-color: #3a86ff;
+  box-shadow: 0 12px 24px rgba(58, 134, 255, 0.25);
 }
 
 .education-block h3 {
   font-weight: 500;
   float: left;
   margin: 0;
-  color: #374054
+  color: #ffffff;
 }
 
 .education-block span {
-  color: #74808a;
-  float: right
+  float: right;
+  color: #a0cfee;
+  /* date */
 }
 
 .education-block h4 {
-  color: #74808a;
   clear: both;
   font-weight: 500;
-  margin: 0 0 15px 0
+  margin: 8px 0 12px 0;
+  color: #9d9dff;
 }
 
+/* Body text */
 .education-block p,
 .education-block ul {
   margin: 0;
-  color: #74808a;
-  font-size: 0.9em
+  color: #b0b6c2;
+  font-size: 0.95em;
 }
 
 .education-block ul {
@@ -551,12 +606,11 @@ footer {
 
 #project {
   padding: 20px 15px 100px 15px;
-  border-bottom: 1px solid #dcd9d9;
   text-align: center
 }
 
 #project h2 {
-  color: #43335f;
+  color: #a0cfee;
   margin-bottom: 50px
 }
 
@@ -566,7 +620,7 @@ footer {
 }
 
 #skills h2 {
-  color: #43335f;
+  color: #a0cfee;
   margin-bottom: 50px
 }
 

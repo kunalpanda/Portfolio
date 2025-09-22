@@ -293,7 +293,13 @@
         // THEME
         const COLOR_DOT = 'rgba(255,255,255,0.6)';
         const COLOR_LINE = 'rgba(173,140,255,0.25)'; // lilac line
-        const BG_GRADIENT = ['#2b1b89', '#1f125f'];  // matches your purple hero
+        const BG_GRADIENT_STOPS = [
+            { stop: 0.00, color: '#2b1b89' },
+            { stop: 0.45, color: '#1f125f' },
+            { stop: 0.70, color: '#181b2f' },
+            { stop: 1.00, color: '#101423' },
+        ];
+
 
         // SETTINGS
         let PARTICLES = 100;            // will scale with screen size below
@@ -314,18 +320,35 @@
         const mouse = { x: null, y: null, active: false };
         let W = 0, H = 0, particles = [], rafId = 0;
 
+        // Put these near your other state vars once (outside the function):
+        // let SOLID_Y = 0, DOC_H = 0;
+
+        // add these once near your other globals:
+        let DOC_H = 0;
+
         function resize() {
-            W = CANVAS.clientWidth;
-            H = CANVAS.clientHeight;
+            // viewport bitmap size (fast), we’ll draw scroll-aware content into it
+            W = window.innerWidth;
+            H = window.innerHeight;
+
+            // compute full document height so gradient spans the whole page visually
+            const docEl = document.documentElement;
+            const body = document.body || { scrollHeight: 0, offsetHeight: 0 };
+            DOC_H = Math.max(
+                H,
+                docEl.scrollHeight, docEl.offsetHeight, docEl.clientHeight,
+                body.scrollHeight, body.offsetHeight
+            );
+
             CANVAS.width = Math.floor(W * DPR);
             CANVAS.height = Math.floor(H * DPR);
             CTX.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-            // Adjust particle count based on area
+            // particle density based on viewport (keeps perf stable)
             const area = W * H;
             PARTICLES = Math.min(500, Math.max(60, Math.floor(area / 12000)));
 
-            // Rebuild particles if count changed a lot or none exist
+            // rebuild if count changed a lot
             if (!particles.length || Math.abs(particles.length - PARTICLES) > 10) {
                 particles = [];
                 for (let i = 0; i < PARTICLES; i++) {
@@ -339,14 +362,15 @@
             }
         }
 
+
         function drawBackground() {
-            // Nice vertical gradient to match your hero
             const g = CTX.createLinearGradient(0, 0, 0, H);
-            g.addColorStop(0, BG_GRADIENT[0]);
-            g.addColorStop(1, BG_GRADIENT[1]);
+            for (const s of BG_GRADIENT_STOPS) g.addColorStop(s.stop, s.color);
             CTX.fillStyle = g;
             CTX.fillRect(0, 0, W, H);
         }
+
+
 
         function update() {
             for (const p of particles) {
